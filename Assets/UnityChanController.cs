@@ -13,14 +13,20 @@ public class UnityChanController : MonoBehaviour
     //前方向の速度(前進１)
     private float velocityZ = 16f;
 
-    //横方向の速度（追加）
+    //横方向の速度
     private float velocityX = 10f;
 
     //上方向の速度（ジャンプに関する事）
     private float velocityY = 10f;
 
-    //左右の移動できる範囲（追加）
+    //左右の移動できる範囲
     private float movableRange = 3.4f;
+
+    //動きを減速させる係数
+    private float coefficient = 0.99f;
+
+    //ゲーム終了の判定
+    private bool isEnd = false;
 
     // Start is called before the first frame update
     void Start()
@@ -38,7 +44,16 @@ public class UnityChanController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //横方向の入力による速度（追加）
+        //ゲーム終了ならUnityちゃんの動きを減衰する
+        if (this.isEnd)
+        {
+            this.velocityZ *= this.coefficient;
+            this.velocityX *= this.coefficient;
+            this.velocityY *= this.coefficient;
+            this.myAnimator.speed *= this.coefficient;
+        }
+
+        //横方向の入力による速度
         float inputVelocityX = 0;
 
         //上方向の入力による速度（ジャンプに関する事）
@@ -47,12 +62,12 @@ public class UnityChanController : MonoBehaviour
         //Unityちゃんを矢印キーまたはボタンに応じて左右に移動させる（追加）
         if (Input.GetKey(KeyCode.LeftArrow) && -this.movableRange < this.transform.position.x)
         {
-            //左方向への速度を代入（追加）
+            //左方向への速度を代入（）
             inputVelocityX = -this.velocityX;
         }
         else if (Input.GetKey(KeyCode.RightArrow) && this.transform.position.x < this.movableRange)
         {
-            //右方向への速度を代入（追加）
+            //右方向への速度を代入（）
             inputVelocityX = this.velocityX;
         }
 
@@ -79,5 +94,27 @@ public class UnityChanController : MonoBehaviour
         //(変更ｘにinputVelocityXを入力)
         //ジャンプに関する事(inputVelocityY)
         this.myRigidbody.velocity = new Vector3(inputVelocityX, inputVelocityY, velocityZ);
+    }
+    //トリガーモードで他のオブジェクトと接触した場合の処理（）
+    void OnTriggerEnter(Collider other)
+    {
+
+        //障害物に衝突した場合（）
+        if (other.gameObject.tag == "CarTag" || other.gameObject.tag == "TrafficConeTag")
+        {
+            this.isEnd = true;
+        }
+
+        //ゴール地点に到達した場合（）
+        if (other.gameObject.tag == "GoalTag")
+        {
+            this.isEnd = true;
+        }
+        //コインに衝突した場合（追加）
+        if (other.gameObject.tag == "CoinTag")
+        {
+            //接触したコインのオブジェクトを破棄（追加）
+            Destroy(other.gameObject);
+        }
     }
 }

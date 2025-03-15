@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;  //(ゲーム終了を表示)
+using System.Linq;
 
 public class UnityChanController : MonoBehaviour
 {
@@ -123,9 +124,14 @@ public class UnityChanController : MonoBehaviour
         this.myRigidbody.velocity = new Vector3(inputVelocityX, inputVelocityY, velocityZ);
 
         //画面外に出たオブジェクトの破棄
-        if (transform.position.x < this.deadLine)
+        string[] targetTags = { "CoinTag", "TrafficConeTag", "CarTag" };
+        foreach (GameObject obj in GameObject.FindObjectsOfType<GameObject>()
+                .Where(obj => targetTags.Contains(obj.tag)))
         {
-            Destroy(gameObject);
+            if (transform.position.z - obj.transform.position.z > -this.deadLine)
+            {
+                Destroy(obj);
+            }
         }
 
     }

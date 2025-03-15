@@ -42,6 +42,9 @@ public class UnityChanController : MonoBehaviour
     //ジャンプボタン押下の判定（ボタンを押された）
     private bool isJButtonDown = false;
 
+    // オブジェクトの消滅位置
+    private float deadLine = -10;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -118,7 +121,16 @@ public class UnityChanController : MonoBehaviour
         //(変更ｘにinputVelocityXを入力)
         //ジャンプに関する事(inputVelocityY)
         this.myRigidbody.velocity = new Vector3(inputVelocityX, inputVelocityY, velocityZ);
+
+        //画面外に出たオブジェクトの破棄
+        if (transform.position.x < this.deadLine)
+        {
+            Destroy(gameObject);
+        }
+
     }
+
+
     //トリガーモードで他のオブジェクトと接触した場合の処理（）
     void OnTriggerEnter(Collider other)
     {
@@ -187,4 +199,4 @@ public class UnityChanController : MonoBehaviour
         this.isRButtonDown = false;
     }
 
-}
+    }
